@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="drop_down_list_attr">
+        <attr name="isDropDownStyle" format="boolean" />
+        <attr name="isOnBottomStyle" format="boolean" />
+        <attr name="isAutoLoadOnBottom" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="TitleBarLayout">
+        <!--activity标题背景颜色-->
+        <attr name="titleBarBgColor" format="color" />
+        <!--activity标题文字颜色-->
+        <attr name="titleBarTextColor" format="color" />
+        <!--activity标题高度-->
+        <attr name="titleBarTitleHeight" format="dimension" />
+        <!--activity标题文字-->
+        <attr name="titleBarTitle" format="string" />
+        <!--标题左边Background-->
+        <attr name="titleBarBackgroundLeft"  format="reference|color"/>
+        <!--标题右边Background-->
+        <attr name="titleBarBackgroundRight"  format="reference|color"/>
+        <!--是否显示左边图标-->
+        <attr name="titleBarLeftIconShow" format="boolean" />
+        <!--设置左边图标-->
+        <attr name="titleBarLeftIcon" format="reference" />
+        <!--是否显示右边图标-->
+        <attr name="titleBarRightIconShow" format="boolean" />
+        <!--设置右边图标-->
+        <attr name="titleBarRightIcon" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="AutoBanner">
+        <!--圆点是否可见-->
+        <attr name="pointsVisibility" format="boolean"></attr>
+        <!--圆点位置-->
+        <attr name="pointsPosition" format="enum">
+            <enum name="CENTER" value="0"></enum>
+            <enum name="LEFT" value="1"></enum>
+            <enum name="RIGHT" value="2"></enum>
+        </attr>
+        <!--圆点包含层的背景色-->
+        <attr name="pointsContainerBackground" format="reference|color"></attr>
+    </declare-styleable>
+
+    <!--ClearEditText-->
+    <declare-styleable name="ClearEditText">
+        <attr  name="delIcon" format="reference" ></attr>
+    </declare-styleable>
+
+</resources>
