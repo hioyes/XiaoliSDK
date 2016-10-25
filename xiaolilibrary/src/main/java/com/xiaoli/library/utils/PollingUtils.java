@@ -4,7 +4,9 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.SystemClock;
+import android.util.Log;
 
 /**
  * 轮询工具类
@@ -23,7 +25,7 @@ public class PollingUtils {
      */
     public static void startPollingService(Context context, int seconds, Class<?> cls,String action) {
         String fileContent = DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss")+"->startPollingService";
-
+        Log.e("PollingUtils",fileContent);
         //获取AlarmManager系统服务
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
@@ -37,6 +39,8 @@ public class PollingUtils {
 
         //使用AlarmManger的setRepeating方法设置定期执行的时间间隔（seconds秒）和需要执行的Service
         manager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime,seconds * 1000, pendingIntent);
+
+
     }
 
     /**
@@ -48,6 +52,7 @@ public class PollingUtils {
     public static void stopPollingService(Context context, Class<?> cls,String action) {
         if(context==null)return;
         String fileContent = DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss")+"->stopPollingService";
+        Log.e("PollingUtils",fileContent);
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if(manager==null)return;
         Intent intent = new Intent(context, cls);
