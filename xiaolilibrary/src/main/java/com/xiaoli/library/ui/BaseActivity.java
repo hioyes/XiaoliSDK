@@ -97,16 +97,17 @@ public abstract class BaseActivity extends Activity implements CommonHandler.Han
     @Override
     protected void onPause() {
         super.onPause();
+        if(!C.NONE_CHEECK_VERSION.contains(C.mCurrentActivity.getPackageName()) && C.CHECK_VERSION_URL!=null) {
+            PollingUtils.stopPollingService(C.mCurrentActivity, PollingService.class, PollingService.ACTION);
+            C.IS_CHECK_VERSION = true;
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         C.release(this, 0);
-        if(!C.NONE_CHEECK_VERSION.contains(C.mCurrentActivity.getPackageName()) && C.CHECK_VERSION_URL!=null) {
-            PollingUtils.stopPollingService(C.mCurrentActivity, PollingService.class, PollingService.ACTION);
-            C.IS_CHECK_VERSION = true;
-        }
+
     }
 
     @Override
