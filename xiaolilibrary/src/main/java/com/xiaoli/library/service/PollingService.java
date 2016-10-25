@@ -44,14 +44,14 @@ public class PollingService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.e(TAG, DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss")+"onCreate");
+        Log.e(TAG, DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss")+"--onCreate");
         initNotifiManager();
     }
 
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
-        Log.e(TAG, DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss")+"onStart");
+        Log.e(TAG, DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss")+"--onStart");
         if (C.PACKAGE_NAME != null && C.CHECK_VERSION_URL != null)
             new PollingThread().start();
     }
@@ -59,7 +59,7 @@ public class PollingService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e(TAG, DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss")+"onDestroy");
+        Log.e(TAG, DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss")+"--onDestroy");
     }
 
     private void initNotifiManager() {
@@ -75,7 +75,7 @@ public class PollingService extends Service {
 
     //弹出Notification
     private void showNotification() {
-        Log.e("service", DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss")+"showNotification");
+        Log.e("service", DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss")+"--showNotification");
     }
 
     /**
