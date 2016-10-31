@@ -161,7 +161,6 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             mCrashHandlerEvent.processCrashLog(result);
         }
     }
-
     /**
      * 回掉事件
      */
