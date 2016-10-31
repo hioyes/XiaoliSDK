@@ -22,7 +22,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     // 系统默认的UncaughtException处理类
     private Thread.UncaughtExceptionHandler mDefaultHandler;
     // CrashHandler实例
-    private static CrashHandler INSTANCE = new CrashHandler();
+    private static CrashHandler INSTANCE = null;
     // 程序的Context对象
     private Context mContext;
 
@@ -34,12 +34,20 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     // 用来存储设备信息和异常信息
     private Map<String, String> infos = new HashMap<String, String>();
 
+    /**
+     * 奔溃回调事件
+     */
+    private CrashHandlerEvent mCrashHandlerEvent = null;
+
 
     /**
      * 获取CrashHandler实例 ,单例模式
      * return
      */
     public static CrashHandler getInstance() {
+        if(INSTANCE==null){
+            INSTANCE = new CrashHandler();
+        }
         return INSTANCE;
     }
 
@@ -56,6 +64,14 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
         // 设置该CrashHandler为程序的默认处理器
         Thread.setDefaultUncaughtExceptionHandler(this);
+    }
+
+    /**
+     * 设置处理奔溃事件
+     * @param crashHandlerEvent
+     */
+    public void setProcessCrashEvent(CrashHandlerEvent crashHandlerEvent){
+        mCrashHandlerEvent = crashHandlerEvent;
     }
 
     /**
@@ -140,6 +156,18 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         sb.append(result);
         Log.e("CrashException->",result);
         FileUtils.writeAppend(mDirectoryPath,DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd-HH-mm-ss"),sb.toString());
+        //执行回调
+        if(mCrashHandlerEvent!=null){
+            mCrashHandlerEvent.processCrashLog(result);
+        }
+    }
+
+    /**
+     * 回掉事件
+     */
+    public interface CrashHandlerEvent{
+        void processCrashLog(String context);//处理奔溃日志
 
     }
+
 }
