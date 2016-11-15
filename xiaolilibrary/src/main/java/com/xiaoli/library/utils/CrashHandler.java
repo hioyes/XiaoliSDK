@@ -5,6 +5,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+import com.xiaoli.library.net.InternetUtils;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -125,6 +127,10 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
                 String versionCode = pi.versionCode + "";
                 infos.put("versionName", versionName);
                 infos.put("versionCode", versionCode);
+                infos.put("sdk", android.os.Build.VERSION.SDK_INT + "");
+                infos.put("phone", android.os.Build.MODEL + "");
+                // 当前发生错误时的网络状态
+                infos.put("netType", InternetUtils.getOperatorName(mContext));
             }
         } catch (PackageManager.NameNotFoundException e) {
         }
@@ -158,7 +164,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         FileUtils.writeAppend(mDirectoryPath,DateUtils.toString(System.currentTimeMillis(),"yyyy-MM-dd-HH-mm-ss"),sb.toString());
         //执行回调
         if(mCrashHandlerEvent!=null){
-            mCrashHandlerEvent.processCrashLog(result);
+            mCrashHandlerEvent.processCrashLog(sb.toString());
         }
     }
     /**
