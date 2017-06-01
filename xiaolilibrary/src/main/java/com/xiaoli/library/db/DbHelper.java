@@ -19,9 +19,9 @@ import java.util.UUID;
 
 /**
  * sqllite操作基类
- *  xiaokx
- *  hioyes@qq.com
- *  2014-11-6
+ * xiaokx
+ * hioyes@qq.com
+ * 2014-11-6
  */
 public class DbHelper<T> {
 
@@ -39,14 +39,65 @@ public class DbHelper<T> {
      * param dbPath 数据库保存目录,必须斜杠结尾
      * param dbName 数据库名称
      */
-    public DbHelper(Context context,String dbPath,String dbName){
-        sqliteHelper = new SqliteHelper(context,dbPath,dbName);
+    public DbHelper(Context context, String dbPath, String dbName) {
+        sqliteHelper = new SqliteHelper(context, dbPath, dbName);
         db = sqliteHelper.getWritableDatabase();
+    }
+
+    public SQLiteDatabase getDb(){
+        return db;
+    }
+
+    /**
+     * 批量插入数据
+     *
+     * @param table
+     * @param list
+     * return true,false
+     */
+    public boolean insertBatch(String table, List<Map> list) {
+        List<String> sqls = new ArrayList<String>();
+        for (Map fields : list) {
+            fields.remove("id");
+            table = DaoUtils.quoteCol(table);
+            Object[] cols = fields.keySet().toArray();
+            Object[] values = new Object[cols.length];
+            for (int i = 0; i < cols.length; i++) {
+                if (fields.get(cols[i]) == null) {
+                    values[i] = null;
+                } else {
+                    values[i] = fields.get(cols[i]).toString();
+                }
+                cols[i] = DaoUtils.quoteCol(cols[i].toString());
+            }
+
+            String sql = "INSERT INTO " + table + " ("
+                    + DaoUtils.implode(", ", cols) + ") VALUES ("
+                    + DaoUtils.implodeValue(", ", values) + ");";
+            sqls.add(sql);
+        }
+        db.beginTransaction();
+        try {
+            for (String sql : sqls) {
+                db.execSQL(sql);
+            }
+            // 设置事务标志为成功，当结束事务时就会提交事务
+            db.setTransactionSuccessful();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 结束事务
+            db.endTransaction();
+            db.close();
+        }
+        return false;
+
     }
 
     /**
      * 插入表记录(单条)
-     *
+     * <p>
      * param table  表名称
      * param fields 字段键值对
      */
@@ -74,7 +125,7 @@ public class DbHelper<T> {
             Log.e("sql->", sql);
             db.execSQL(sql);
 
-            Cursor c = db.rawQuery("select LAST_INSERT_ROWID() as id",null);
+            Cursor c = db.rawQuery("select LAST_INSERT_ROWID() as id", null);
             if (c.moveToNext()) {
                 return c.getInt(c.getColumnIndex("id"));
             }
@@ -88,20 +139,21 @@ public class DbHelper<T> {
 
     /**
      * 插入表记录
-     *
+     * <p>
      * param table 表名称
      * param vo    值对象
      */
     public int insert(String table, T vo) {
-       return this.insert(table, DaoUtils.voToMap(vo));
+        return this.insert(table, DaoUtils.voToMap(vo));
     }
 
     /**
      * 插入表记录(单条),返回影响记录行数
-     *
+     * <p>
      * param table
      * param fields
-     * @return  失败为-1
+     *
+     * @return 失败为-1
      */
     public long insertRecord(String table, Map fields) {
         ContentValues cv = new ContentValues();
@@ -120,9 +172,10 @@ public class DbHelper<T> {
 
     /**
      * 插入表记录(单条),返回影响记录行数
-     *
+     * <p>
      * param table
      * param vo
+     *
      * @return 失败为-1
      */
     public long insertRecord(String table, T vo) {
@@ -132,7 +185,7 @@ public class DbHelper<T> {
 
     /**
      * 表记录更新
-     *
+     * <p>
      * param table  表名称
      * param fields 字段键值对
      * param where  更新条件
@@ -166,7 +219,7 @@ public class DbHelper<T> {
 
     /**
      * 表记录更新
-     *
+     * <p>
      * param table 表名称
      * param vo    值对象
      * param where 更新条件
@@ -177,7 +230,7 @@ public class DbHelper<T> {
 
     /**
      * 删除表数据
-     *
+     * <p>
      * param table 表名称
      * param where 删除条件
      */
@@ -187,7 +240,7 @@ public class DbHelper<T> {
 
     /**
      * 执行一个sql语句
-     *
+     * <p>
      * param sql
      */
     public void execute(String sql) {
@@ -196,7 +249,7 @@ public class DbHelper<T> {
 
     /**
      * 查询记录总数
-     *
+     * <p>
      * param table
      * param where
      */
@@ -225,12 +278,12 @@ public class DbHelper<T> {
      * param handler
      * param taskId
      */
-    public void getTotal(final String table, final String where, final Handler handler,final int taskId){
+    public void getTotal(final String table, final String where, final Handler handler, final int taskId) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 Message message = handler.obtainMessage();
-                message.obj = getTotal(table,where);
+                message.obj = getTotal(table, where);
                 message.what = taskId;
                 handler.sendMessage(message);
             }
@@ -238,13 +291,14 @@ public class DbHelper<T> {
         Thread thread = new Thread(runnable);
         thread.setName(UUID.randomUUID().toString());
         thread.start();
-        ThreadPoolUtils.addMyThread(C.mCurrentActivity,thread);
+        ThreadPoolUtils.addMyThread(C.mCurrentActivity, thread);
     }
 
     /**
      * 返回一个对象
-     *
+     * <p>
      * param sql
+     *
      * @return
      */
     public T queryForObject(String sql, Class clazz) {
@@ -270,12 +324,12 @@ public class DbHelper<T> {
      * param handler
      * param taskId
      */
-    public void queryForObject(final String sql, final Class clazz, final Handler handler,final int taskId){
+    public void queryForObject(final String sql, final Class clazz, final Handler handler, final int taskId) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 Message message = handler.obtainMessage();
-                message.obj = queryForObject(sql,clazz);
+                message.obj = queryForObject(sql, clazz);
                 message.what = taskId;
                 handler.sendMessage(message);
             }
@@ -283,13 +337,14 @@ public class DbHelper<T> {
         Thread thread = new Thread(runnable);
         thread.setName(UUID.randomUUID().toString());
         thread.start();
-        ThreadPoolUtils.addMyThread(C.mCurrentActivity,thread);
+        ThreadPoolUtils.addMyThread(C.mCurrentActivity, thread);
     }
 
     /**
      * 查询返回list集合
      * param sql
      * param clazz
+     *
      * @return
      */
     public List<T> queryForList(String sql, Class clazz) {
@@ -303,7 +358,7 @@ public class DbHelper<T> {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             c.close();
         }
         return list;
@@ -316,12 +371,12 @@ public class DbHelper<T> {
      * param handler
      * param taskId
      */
-    public void queryForList(final String sql, final Class clazz, final Handler handler,final int taskId){
+    public void queryForList(final String sql, final Class clazz, final Handler handler, final int taskId) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 Message message = handler.obtainMessage();
-                message.obj = queryForList(sql,clazz);
+                message.obj = queryForList(sql, clazz);
                 message.what = taskId;
                 handler.sendMessage(message);
             }
@@ -329,6 +384,6 @@ public class DbHelper<T> {
         Thread thread = new Thread(runnable);
         thread.setName(UUID.randomUUID().toString());
         thread.start();
-        ThreadPoolUtils.addMyThread(C.mCurrentActivity,thread);
+        ThreadPoolUtils.addMyThread(C.mCurrentActivity, thread);
     }
 }
