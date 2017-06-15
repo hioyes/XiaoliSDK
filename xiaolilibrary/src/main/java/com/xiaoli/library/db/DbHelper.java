@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.xiaoli.library.C;
+import com.xiaoli.library.utils.DateUtils;
 import com.xiaoli.library.utils.ThreadPoolUtils;
 
 import java.util.ArrayList;
@@ -49,7 +50,21 @@ public class DbHelper<T> {
     }
 
     /**
-     * 批量插入数据
+     * 批量插入数据 List<vo>
+     * @param table
+     * @param list
+     * @return
+     */
+    public boolean insertBatchVo(String table, List<T> list) {
+        List<Map> maps = new ArrayList<Map>();
+        for (T t:list) {
+            maps.add(DaoUtils.voToMap(t));
+        }
+        return insertBatch(table,maps);
+    }
+
+    /**
+     * 批量插入数据List<Map>
      *
      * @param table
      * @param list
@@ -89,7 +104,6 @@ public class DbHelper<T> {
         } finally {
             // 结束事务
             db.endTransaction();
-            db.close();
         }
         return false;
 
